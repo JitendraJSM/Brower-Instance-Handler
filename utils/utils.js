@@ -101,30 +101,29 @@ exports.askUser = askUser;
 async function getCurrentMachineName() {
   // Get the current user's username
   let currentMachine = os.userInfo().username;
-  console.log(
-    `Current Machine on which Automation is going to run: ${currentMachine}`
-  );
 
-  if (currentMachine !== "acer" && currentMachine !== "Er. Jitendra Nath")
-    //  1. Ask user for the system configuration
-    currentMachine = await askUser(
-      `\nWhich system is this,\n\tPress '1' for Office.\n\tPress '2' for Home.\nThen press 'Enter':\t`
-    );
+  const availableMachines = ["Office", "Home", "SM-NETWORK"];
 
-  if (currentMachine === "1" || currentMachine === "acer") {
-    process.env.CURRENT_MACHINE = "Office";
-    return "Office";
-  } else if (currentMachine === "2" || currentMachine === "Er. Jitendra Nath") {
-    process.env.CURRENT_MACHINE = "Home";
-    return "Home";
-  } else {
-    console.log(`\x1b[31mWrong Input, TRY AGAIN.\x1b[0m`);
+  if (!availableMachines.includes(currentMachine))
     console.log(
-      `Current Machine on which Automation is going to run: ${currentMachine}`
+      `Current Machine is not in "availableMachines" array in utils. Please add it to "availableMachines".`
     );
-    return false;
-  }
+  return false;
 }
 exports.getCurrentMachineName = getCurrentMachineName;
 
+async function getAvailableChromeProfile() {
+  const profiles = [];
+  const profilesPath = `${os.homedir()}/AppData/Local/Google/Chrome/User Data`;
+  const fs = require("fs");
+  // 1. Check how many folders are there in profilesPath starting with 'Profile' and add their name to profiles array.
+  const profilesCreated = fs
+    .readdirSync(profilesPath)
+    .filter((foldersName) => foldersName.startsWith("Profile"));
+
+  // 2. Find first available profile number
+  const nextProfileNumber = profilesCreated.length + 1;
+  return nextProfileNumber;
+}
+exports.getAvailableChromeProfile = getAvailableChromeProfile;
 // --------------------------------------------------------------
